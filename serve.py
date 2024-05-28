@@ -20,7 +20,9 @@ from flask import render_template
 from flask import g # global session-level object
 from flask import session
 
-from aslite.db import get_papers_db, get_metas_db, get_tags_db, get_last_active_db, get_email_db
+from aslite.db import (
+    get_papers_db, get_metas_db, get_tags_db, get_last_active_db, get_email_db,
+)
 from aslite.db import load_features
 
 # -----------------------------------------------------------------------------
@@ -149,7 +151,9 @@ def svm_rank(tags: str = '', pid: str = '', C: float = 0.01):
         return [], [], [] # there are no positives?
 
     # classify
-    clf = svm.LinearSVC(class_weight='balanced', verbose=False, max_iter=10000, tol=1e-6, C=C)
+    clf = svm.LinearSVC(
+        class_weight='balanced', verbose=False, max_iter=10000, tol=1e-6, C=C,
+    )
     clf.fit(x, y)
     s = clf.decision_function(x)
     sortix = np.argsort(-s)
@@ -157,8 +161,8 @@ def svm_rank(tags: str = '', pid: str = '', C: float = 0.01):
     scores = [100*float(s[ix]) for ix in sortix]
 
     # get the words that score most positively and most negatively for the svm
-    ivocab = {v:k for k,v in features['vocab'].items()} # index to word mapping
-    weights = clf.coef_[0] # (n_features,) weights of the trained svm
+    ivocab = {v:k for k,v in features['vocab'].items()}  # index to word mapping
+    weights = clf.coef_[0]  # (n_features,) weights of the trained svm
     sortix = np.argsort(-weights)
     words = []
     for ix in list(sortix[:40]) + list(sortix[-20:]):
@@ -287,7 +291,11 @@ def main():
     context['papers'] = papers
     context['tags'] = rtags
     context['words'] = words
-    context['words_desc'] = "Here are the top 40 most positive and bottom 20 most negative weights of the SVM. If they don't look great then try tuning the regularization strength hyperparameter of the SVM, svm_c, above. Lower C is higher regularization."
+    context['words_desc'] = (
+        "Here are the top 40 most positive and bottom 20 most negative weights of the "
+        "SVM. If they don't look great then try tuning the regularization strength "
+        "hyperparameter of the SVM, svm_c, above. Lower C is higher regularization."
+    )
     context['gvars'] = {}
     context['gvars']['rank'] = opt_rank
     context['gvars']['tags'] = opt_tags
@@ -329,7 +337,11 @@ def inspect():
     context = default_context()
     context['paper'] = paper
     context['words'] = words
-    context['words_desc'] = "The following are the tokens and their (tfidf) weight in the paper vector. This is the actual summary that feeds into the SVM to power recommendations, so hopefully it is good and representative!"
+    context['words_desc'] = (
+        "The following are the tokens and their (tfidf) weight in the paper vector. "
+        "This is the actual summary that feeds into the SVM to power recommendations, "
+        "so hopefully it is good and representative!"
+    )
     return render_template('inspect.html', **context)
 
 @app.route('/profile')
@@ -485,7 +497,9 @@ def register_email():
 
     if g.user:
         # do some basic input validation
-        proper_email = re.match(r'^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', email, re.IGNORECASE)
+        proper_email = re.match(
+            r'^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', email, re.IGNORECASE,
+        )
         if email == '' or proper_email: # allow empty email, meaning no email
             # everything checks out, write to the database
             with get_email_db(flag='c') as edb:

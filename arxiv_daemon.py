@@ -15,12 +15,25 @@ from aslite.db import get_papers_db, get_metas_db
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.INFO, format='%(name)s %(levelname)s %(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.basicConfig(
+        level=logging.INFO, 
+        format='%(name)s %(levelname)s %(asctime)s %(message)s', 
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+    )
 
     parser = argparse.ArgumentParser(description='Arxiv Daemon')
-    parser.add_argument('-n', '--num', type=int, default=100, help='up to how many papers to fetch')
-    parser.add_argument('-s', '--start', type=int, default=0, help='start at what index')
-    parser.add_argument('-b', '--break-after', type=int, default=3, help='how many 0 new papers in a row would cause us to stop early? or 0 to disable.')
+    parser.add_argument(
+        '-n', '--num', type=int, default=100, 
+        help='up to how many papers to fetch'
+    )
+    parser.add_argument(
+        '-s', '--start', type=int, default=0, 
+        help='start at what index'
+    )
+    parser.add_argument(
+        '-b', '--break-after', type=int, default=3, 
+        help='how many 0 new papers in a row would cause us to stop early? or 0 to disable.'
+    )
     args = parser.parse_args()
     print(args)
     """
